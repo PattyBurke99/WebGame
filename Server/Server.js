@@ -119,7 +119,7 @@ function sendPlayerData() {
 
     //Every player in the array that is NOT them
     for (let j=0; j<max_players; j++) {
-      if (j == i || typeof(players[j]) == 'undefined')
+      if (j == i || typeof(players[j]) == 'undefined' || typeof(players[j].socket) == 'undefined')
         continue;
 
       const msg = JSON.stringify(new PlayerStatusMessage(j, players[j].name, players[j].x, players[j].y));

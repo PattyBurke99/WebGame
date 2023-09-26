@@ -45,7 +45,7 @@ function net_player(id, name, x, y) {
     this.name = name;
     this.x = x;
     this.y = y;
-  }
+}
 
 //NETWORKED EVENTS GO HERE
 ws.onopen = (event => {
@@ -73,13 +73,9 @@ ws.onmessage = (event => {
         ws.send(JSON.stringify(hsMessage));
     } else if (msg.type == "status") {
         if (typeof(net_players[msg.id]) == 'undefined') {
-            //alert(`Added player id ${msg.id} (${msg.name}) to net_players. x: ${msg.x} y:${msg.y}`);
             net_players[msg.id] = new net_player(msg.id, msg.name, msg.x, msg.y);
         }
         else {
-            //To optimize, make it so each player id and name is set only once
-            net_players[msg.id].id = msg.id;
-            net_players[msg.id].name = msg.name;
             net_players[msg.id].x = msg.x;
             net_players[msg.id].y = msg.y;
         }
