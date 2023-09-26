@@ -12,22 +12,24 @@ let network_id;
 
 let x = canvas.width/2;
 let y = canvas.height/2;
-
 let move_speed = 2;
 let dx = 0;
 let dy = 0;
 
 //NETWORK MESSAGE OBJECTS HERE
 
-function HsMessage(id, name) {
+function HsMessage(id, name,x ,y) {
     this.type = "hs";
     this.id = id;
     this.name = name;
+    //Starting location
+    this.x = x;
+    this.y = y;
 }
 
-function StatusMessage(name, x, y) {
+function StatusMessage(id, x, y) {
     this.type = "status";
-    this.name = name;
+    this.id = id;
     this.x = x;
     this.y = y;
   }
@@ -76,24 +78,24 @@ ws.onclose = (event => {
     clearInterval(net_process);
     clearInterval(draw_process);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    is_connected = false;
 
     alert("You have been disconnected from the server! Refresh the page.");
-    is_connected = false;
 });
 
 ws.onmessage = (event => {
     const msg = JSON.parse(event.data);
-
-    //Handshake with server, tell server your name
+    //Handshake with server, tell server your name, x and y
     if (msg.type == "hs") {
         //Reply to handshake with playername
-        const hsMessage = new HsMessage(msg.id, player_name);
+        network_id = msg.id;
+        const hsMessage = new HsMessage(network_id, player_name, x, y);
         ws.send(JSON.stringify(hsMessage));
     }
 });
 
 function sendLocation() {
-    const player_data = new StatusMessage(player_name, x, y);
+    const player_data = new StatusMessage(network_id, x, y);
     ws.send(JSON.stringify(player_data));
 }
 
