@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "readline-sync": "^1.4.10",
+    "ws": "^8.14.1"
+  }
+}
