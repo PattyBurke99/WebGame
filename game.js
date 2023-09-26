@@ -1,11 +1,12 @@
 //Extract the player name from the url arguments
 let url = window.location.search;
 let url_arguments = url.split("=");
-const player_name = url_arguments[1];
+const player_name = url_arguments[1].split("&")[0];
+const server_ip = url.split("=")[2];
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-const ws = new WebSocket("ws://localhost:8080");
+const ws = new WebSocket("ws://" + server_ip + ":8080");
 
 let draw_process, net_process;
 let is_connected = false;
