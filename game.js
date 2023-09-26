@@ -62,7 +62,7 @@ ws.onclose = (event => {
     clearInterval(draw_process);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    alert("You have been disconnected from the server!")
+    alert("You have been disconnected from the server! Refresh the page.");
     is_connected = false;
 });
 
