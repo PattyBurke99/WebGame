@@ -13,8 +13,7 @@ let player_index = 0;
 
 let players = [];
 server.on('connection', function(socket) {
-    players[player_index] = socket;
-    player_index++;
+    players.push(socket);
 
     //SEND PLAYER HIS PLAYER INDEX HERE, DESIGN MESSAGING SYSTEM SERVER->CLIENT
 

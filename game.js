@@ -91,6 +91,9 @@ function drawBall() {
     ctx.fill();
     ctx.closePath();
 
+    ctx.fillStyle = "#000000";
+    ctx.fillText(player_name, x - 11, y - 13);
+
     x += dx;
     y += dy;
 }
