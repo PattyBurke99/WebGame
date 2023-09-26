@@ -4,7 +4,6 @@ const server = new WebSocket.Server({
 });
 
 const max_players = 6;
-//fix error when send_rate is too high!!!!! causes server crash
 const player_send_rate = 10; //ms
 
 //NETWORK OBJECTS HERE
@@ -106,7 +105,7 @@ server.on('connection', function(socket) {
       if (i == player_index || typeof(players[i]) == 'undefined' || !players[i].ready)
         continue;
 
-      const msg= JSON.stringify(new PlayerDisconnectMessage(player_index));
+      const msg = JSON.stringify(new PlayerDisconnectMessage(player_index));
       players[i].socket.send(msg);
     }
 
@@ -127,7 +126,6 @@ function sendPlayerData() {
         continue;
 
       const msg = JSON.stringify(new PlayerStatusMessage(j, players[j].name, players[j].x, players[j].y));
-      //Bug associated with next line.. trying to send undefined value.. causes server crash
       if (players[i].ready) 
         players[i].socket.send(msg);
     }

@@ -50,7 +50,7 @@ function net_player(id, name, x, y) {
 //NETWORKED EVENTS GO HERE
 ws.onopen = (event => {
     draw_process = setInterval(draw, drawRate);
-    net_process = setInterval(sendLocation, dataRate);
+    net_process = setInterval(networkProcess, dataRate);
     is_connected = true;
 });
 
@@ -85,7 +85,7 @@ ws.onmessage = (event => {
     }
 });
 
-function sendLocation() {
+function networkProcess() {
     ws.send(JSON.stringify(new StatusMessage()));
 }
 
