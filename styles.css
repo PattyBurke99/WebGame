@@ -9,3 +9,8 @@ canvas {
     margin: 0 auto;
     margin-top: 2%;
 }
+
+body form {
+    margin-top: 15%;
+    margin-left: 40%;
+}
