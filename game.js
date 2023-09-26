@@ -1,8 +1,6 @@
-//Extract the player name from the url arguments
-let url = window.location.search;
-let url_arguments = url.split("=");
-const player_name = url_arguments[1].split("&")[0];
-const server_ip = url.split("=")[2];
+//Extract URL arguments
+const player_name = window.location.search.split("=")[1].split("&")[0];
+const server_ip = window.location.search.split("=")[2];
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
@@ -10,6 +8,7 @@ const ws = new WebSocket("ws://" + server_ip + ":8080");
 
 let draw_process, net_process;
 let is_connected = false;
+let network_id;
 
 let x = canvas.width/2;
 let y = canvas.height/2;
@@ -17,6 +16,21 @@ let y = canvas.height/2;
 let move_speed = 2;
 let dx = 0;
 let dy = 0;
+
+//NETWORK MESSAGE OBJECTS HERE
+
+function HsMessage(id, name) {
+    this.type = "hs";
+    this.id = id;
+    this.name = name;
+}
+
+function StatusMessage(name, x, y) {
+    this.type = "status";
+    this.name = name;
+    this.x = x;
+    this.y = y;
+  }
 
 //INPUT EVENTS GO HERE
 let map = {}; // You could also use an array
@@ -54,7 +68,7 @@ onkeyup = function(e){
 //NETWORKED EVENTS GO HERE
 ws.onopen = (event => {
     draw_process = setInterval(draw, 10);
-    net_process = setInterval(sendLocation, 2000);
+    net_process = setInterval(sendLocation, 10000);
     is_connected = true;
 });
 
@@ -67,19 +81,19 @@ ws.onclose = (event => {
     is_connected = false;
 });
 
-ws.onmessage = (message) => {
-    // alert("Data received from server!");
-}
+ws.onmessage = (event => {
+    const msg = JSON.parse(event.data);
+
+    //Handshake with server, tell server your name
+    if (msg.type == "hs") {
+        //Reply to handshake with playername
+        const hsMessage = new HsMessage(msg.id, player_name);
+        ws.send(JSON.stringify(hsMessage));
+    }
+});
 
 function sendLocation() {
-    const player_data = {
-        net_name: player_name,
-        net_x: x,
-        net_y: y,
-        net_dx: dx,
-        net_dy: dy,
-    };
-
+    const player_data = new StatusMessage(player_name, x, y);
     ws.send(JSON.stringify(player_data));
 }
 
