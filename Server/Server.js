@@ -4,6 +4,7 @@ const server = new WebSocket.Server({
 });
 
 const max_players = 6;
+//fix error when send_rate is too high!!!!! causes server crash
 const player_send_rate = 100; //ms
 
 //NETWORK OBJECTS HERE
