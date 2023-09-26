@@ -131,7 +131,7 @@ function drawPlayer(name, player_x, player_y) {
     ctx.closePath();
 
     ctx.fillStyle = "#000000";
-    ctx.fillText(name, player_x - 11, player_y - 13);
+    ctx.fillText(name, player_x - 0.5*ctx.measureText(name).width, player_y - 14);
 }
 
 function draw() {

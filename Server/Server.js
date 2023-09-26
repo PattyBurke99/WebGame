@@ -5,13 +5,14 @@ const server = new WebSocket.Server({
 
 const max_players = 6;
 //fix error when send_rate is too high!!!!! causes server crash
-const player_send_rate = 100; //ms
+const player_send_rate = 10; //ms
 
 //NETWORK OBJECTS HERE
 function player_data_object(id) {
   this.id = id;
   //These values set after client returns handshake
   this.name;
+  this.ready = false;
   this.socket;
   this.x;
   this.y;
@@ -80,6 +81,7 @@ server.on('connection', function(socket) {
       players[player_index].socket = socket;
       players[player_index].x = msg.x;
       players[player_index].y = msg.y;
+      players[player_index].ready = true;
       console.log(`HS Reply received from player id:${player_index}, player_name: ${players[player_index].name}, x:${msg.x}, y: ${msg.y}`);
     }
     else if (msg.type == "status") {
@@ -97,9 +99,11 @@ server.on('connection', function(socket) {
 
   // Attach onclose listener to connected socket
   socket.on('close', function() {
+    players[player_index].ready = false;
+
     //Send disconnect message to all other players
     for (let i=0; i<max_players; i++) {
-      if (i == player_index || typeof(players[i]) == 'undefined')
+      if (i == player_index || typeof(players[i]) == 'undefined' || !players[i].ready)
         continue;
 
       const msg= JSON.stringify(new PlayerDisconnectMessage(player_index));
@@ -119,12 +123,13 @@ function sendPlayerData() {
 
     //Every player in the array that is NOT them
     for (let j=0; j<max_players; j++) {
-      if (j == i || typeof(players[j]) == 'undefined' || typeof(players[j].socket) == 'undefined')
+      if (j == i || typeof(players[j]) == 'undefined' || !players[j].ready)
         continue;
 
       const msg = JSON.stringify(new PlayerStatusMessage(j, players[j].name, players[j].x, players[j].y));
       //Bug associated with next line.. trying to send undefined value.. causes server crash
-      players[i].socket.send(msg);
+      if (players[i].ready) 
+        players[i].socket.send(msg);
     }
   }
 }
