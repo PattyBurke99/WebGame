@@ -35,4 +35,11 @@ server.on('connection', function(socket) {
   });
 });
 
-// setInterval(pingPlayer, 10000);
+function gameloop() {
+    //Processing goes here
+}
+
+
+
+//setInterval(gameloop, 1000);
+//setInterval(pingPlayer, 10000);

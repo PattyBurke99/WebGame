@@ -1,3 +1,8 @@
+//Extract the player name from the url arguments
+let url = window.location.search;
+let url_arguments = url.split("=");
+const player_name = url_arguments[1];
+
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const ws = new WebSocket("ws://localhost:8080");
@@ -11,11 +16,6 @@ let y = canvas.height/2;
 let move_speed = 2;
 let dx = 0;
 let dy = 0;
-
-//Extract the player name from the url arguments
-let url = window.location.search;
-let url_arguments = url.split("=");
-const player_name = url_arguments[1];
 
 //INPUT EVENTS GO HERE
 let map = {}; // You could also use an array

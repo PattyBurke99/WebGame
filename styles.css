@@ -11,6 +11,28 @@ canvas {
 }
 
 body form {
+    display: grid;
+    width: 30%;
+    height: 20%;
+
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-gap: 2%;
+
     margin-top: 15%;
-    margin-left: 37.5%;
+    margin-left: 35%;
+
+    padding: 1% 1% 1% 1%;
+    border: 1px solid black;
+}
+
+body form div input {
+    width: 80%;
+    height: 70%;
+    float: right;
+}
+
+body form > input {
+    margin-left: 30%;
+    margin-right: 30%;
 }
