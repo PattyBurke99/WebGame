@@ -1,28 +1,36 @@
-// TO DO NEXT: IMPLEMENT CONNECTION MESSAGES, SEND DATA ABOUT OTHER PLAYERS TO EVERYONE
-// EVERY PLAYER KNOWS THEIR OWN NETWORK ID, WE COULD POPULATE A LOCAL ARRAY USING A NEW
-// MESSAGE TYPE THEN CREATE SERVERSIDE PROCESS THAT PERIODICALLY SENDS OUT ALL PLAYER
-// LOCATIONS 
-
 const WebSocket = require('ws');
 const server = new WebSocket.Server({
   port: 8080,
 });
 
-const max_players = 3;
+const max_players = 6;
+const player_send_rate = 100; //ms
 
 //NETWORK OBJECTS HERE
 function player_data_object(id) {
   this.id = id;
   //These values set after client returns handshake
   this.name;
+  this.socket;
   this.x;
   this.y;
 }
 
-//Handshake message, sent to player to tell them their netID
-//Sometime in future use random key for verification
 function HsMessage(id) {
   this.type = "hs";
+  this.id = id;
+}
+
+function PlayerStatusMessage(id, name, x, y) {
+  this.type = "status";
+  this.id = id;
+  this.name = name;
+  this.x = x;
+  this.y = y;
+}
+
+function PlayerDisconnectMessage(id) {
+  this.type = "disconnect";
   this.id = id;
 }
 
@@ -43,7 +51,7 @@ server.on('connection', function(socket) {
     } 
   }
 
-    //Occurs when max players is reached
+  //Occurs when max players is reached
   if (typeof player_index == 'undefined') {
     console.log("Refusing connection. Max players reached.");
     socket.terminate();
@@ -68,6 +76,7 @@ server.on('connection', function(socket) {
       }
 
       players[player_index].name = msg.name;
+      players[player_index].socket = socket;
       players[player_index].x = msg.x;
       players[player_index].y = msg.y;
       console.log(`HS Reply received from player id:${player_index}, player_name: ${players[player_index].name}, x:${msg.x}, y: ${msg.y}`);
@@ -79,7 +88,7 @@ server.on('connection', function(socket) {
         return;
       }
 
-      console.log(`STATUS: ${players[player_index].name} id: ${msg.id} X: ${msg.x} Y: ${msg.y}`);
+      //console.log(`STATUS: ${players[player_index].name} id: ${msg.id} X: ${msg.x} Y: ${msg.y}`);
       players[player_index].x = msg.x;
       players[player_index].y = msg.y;
     }
@@ -87,7 +96,36 @@ server.on('connection', function(socket) {
 
   // Attach onclose listener to connected socket
   socket.on('close', function() {
+    //Send disconnect message to all other players
+    for (let i=0; i<max_players; i++) {
+      if (i == player_index || typeof(players[i]) == 'undefined')
+        continue;
+
+      const msg= JSON.stringify(new PlayerDisconnectMessage(player_index));
+      players[i].socket.send(msg);
+    }
+
     players[player_index] = undefined;
     console.log(`Client ${player_index} Disconnected!`);
   });
 });
+
+function sendPlayerData() {
+  //Send each player
+  for (let i=0; i<max_players; i++) {
+    if (typeof(players[i]) == 'undefined')
+      continue;
+
+    //Every player in the array that is NOT them
+    for (let j=0; j<max_players; j++) {
+      if (j == i || typeof(players[j]) == 'undefined')
+        continue;
+
+      const msg = JSON.stringify(new PlayerStatusMessage(j, players[j].name, players[j].x, players[j].y));
+      //Bug associated with next line.. trying to send undefined value.. causes server crash
+      players[i].socket.send(msg);
+    }
+  }
+}
+
+setInterval(sendPlayerData, player_send_rate);
