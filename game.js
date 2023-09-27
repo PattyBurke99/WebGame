@@ -1,7 +1,5 @@
-//Extract URL arguments
 const player_name = window.location.search.split("=")[1].split("&")[0];
 const server_ip = window.location.search.split("=")[2];
-
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const ws = new WebSocket("ws://" + server_ip + ":8080");
@@ -10,10 +8,9 @@ const dataRate = 10; //ms
 const drawRate = 10; //ms
 
 let draw_process, net_process;
-let is_connected = false;
 let network_id;
-
 let net_players = [];
+let is_connected = false;
 
 let local_x = canvas.width/2;
 let local_y = canvas.height/2;
