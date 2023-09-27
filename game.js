@@ -21,7 +21,7 @@ let dy = 0;
 
 //NETWORK MESSAGE OBJECTS HERE
 
-function HsMessage(id, name) {
+function HSMessage(id, name) {
     this.type = "hs";
     this.id = id;
     this.name = name;
@@ -31,12 +31,13 @@ function HsMessage(id, name) {
 }
 
 function StatusMessage() {
-    this.type = "status";
+    this.type = "stat";
     this.id = network_id;
     this.x = local_x;
     this.y = local_y;
 }
 
+//Data object for net_players[] array
 function net_player(id, name, x, y) {
     this.id = id;
     this.name = name;
@@ -66,9 +67,9 @@ ws.onmessage = (event => {
     if (msg.type == "hs") {
         //Reply to handshake with playername
         network_id = msg.id;
-        const hsMessage = new HsMessage(network_id, player_name);
+        const hsMessage = new HSMessage(network_id, player_name);
         ws.send(JSON.stringify(hsMessage));
-    } else if (msg.type == "status") {
+    } else if (msg.type == "stat") {
         if (typeof(net_players[msg.id]) == 'undefined') {
             net_players[msg.id] = new net_player(msg.id, msg.name, msg.x, msg.y);
         }
@@ -76,7 +77,7 @@ ws.onmessage = (event => {
             net_players[msg.id].x = msg.x;
             net_players[msg.id].y = msg.y;
         }
-    } else if (msg.type == "disconnect") {
+    } else if (msg.type == "disc") {
         //remove net_players object once they have disconnected
         net_players[msg.id] = undefined;
     }

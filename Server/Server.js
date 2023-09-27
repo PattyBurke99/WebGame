@@ -7,6 +7,27 @@ const max_players = 6;
 const player_send_rate = 10; //ms
 
 //NETWORK OBJECTS HERE
+
+function HSMessage(id) {
+  this.type = "hs";
+  this.id = id;
+}
+
+function PlayerStatusMessage(id, name, x, y) {
+  this.type = "stat";
+  this.id = id;
+  //to optimise, only set name once (make PlayerConnectMessage?)
+  this.name = name;
+  this.x = x;
+  this.y = y;
+}
+
+function PlayerDisconnectMessage(id) {
+  this.type = "disc";
+  this.id = id;
+}
+
+//Data object for players[] array
 function player_data_object(id) {
   this.id = id;
   //These values set after client returns handshake
@@ -15,24 +36,6 @@ function player_data_object(id) {
   this.socket;
   this.x;
   this.y;
-}
-
-function HsMessage(id) {
-  this.type = "hs";
-  this.id = id;
-}
-
-function PlayerStatusMessage(id, name, x, y) {
-  this.type = "status";
-  this.id = id;
-  this.name = name;
-  this.x = x;
-  this.y = y;
-}
-
-function PlayerDisconnectMessage(id) {
-  this.type = "disconnect";
-  this.id = id;
 }
 
 console.log("Server started");
@@ -61,10 +64,8 @@ server.on('connection', function(socket) {
 
   //Send handshake message to client, this tells client their player_index, they
   //will reply with their name, x, and y which will be added to the player_data_object
-  const hsMessage = new HsMessage(player_index);
+  const hsMessage = new HSMessage(player_index);
   socket.send(JSON.stringify(hsMessage));
-
-  console.log(`Player connected with ID ${player_index}`);
 
   //Attach new message listener to connected socket
   socket.on('message', function(event) {
@@ -81,9 +82,9 @@ server.on('connection', function(socket) {
       players[player_index].x = msg.x;
       players[player_index].y = msg.y;
       players[player_index].ready = true;
-      console.log(`HS Reply received from player id:${player_index}, player_name: ${players[player_index].name}, x:${msg.x}, y: ${msg.y}`);
+      console.log(`[Handshake reply received] id:${player_index}, player_name: ${players[player_index].name}, x:${msg.x}, y: ${msg.y}`);
     }
-    else if (msg.type == "status") {
+    else if (msg.type == "stat") {
       if (msg.id != player_index) {
         console.log(`Mismatched ids received from player id ${player_index}! Closing connection.`);
         socket.terminate();
