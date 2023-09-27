@@ -123,11 +123,10 @@ onkeyup = function(e){
 function drawPlayer(name, player_x, player_y) {
     ctx.beginPath();
     ctx.arc(player_x, player_y, 10, 0, Math.PI*2);
-    ctx.fillStyle = "#0095DD";
+    ctx.fillStyle = "#000000";
     ctx.fill();
     ctx.closePath();
 
-    ctx.fillStyle = "#000000";
     ctx.fillText(name, player_x - 0.5*ctx.measureText(name).width, player_y - 14);
 }
 
