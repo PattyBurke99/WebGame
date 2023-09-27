@@ -3,7 +3,7 @@ const server = new WebSocket.Server({
   port: 8080,
 });
 
-const max_players = 6;
+const max_players = 4;
 const player_send_rate = 10; //ms
 
 //NETWORK OBJECTS HERE
@@ -82,7 +82,7 @@ server.on('connection', function(socket) {
       players[player_index].x = msg.x;
       players[player_index].y = msg.y;
       players[player_index].ready = true;
-      console.log(`[Handshake reply received] id:${player_index}, player_name: ${players[player_index].name}, x:${msg.x}, y: ${msg.y}`);
+      console.log(`[PLAYER CONNECTED] id:${player_index}, player_name: ${players[player_index].name}, x:${msg.x}, y: ${msg.y}`);
     }
     else if (msg.type == "stat") {
       if (msg.id != player_index) {

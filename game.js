@@ -20,7 +20,6 @@ let dx = 0;
 let dy = 0;
 
 //NETWORK MESSAGE OBJECTS HERE
-
 function HSMessage(id, name) {
     this.type = "hs";
     this.id = id;
